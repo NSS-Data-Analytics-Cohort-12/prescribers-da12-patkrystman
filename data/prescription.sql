@@ -38,18 +38,18 @@
 --     b. Which specialty had the most total number of claims for opioids?
 
 
-select prescriber.specialty_description, SUM(prescription.total_claim_count)
-from prescriber
-inner join prescription
-using(npi)
-inner join drug
-using(drug_name)
-where opioid_drug_flag = 'Y'
-	or long_acting_opioid_drug_flag = 'Y'
-group by specialty_description
-order by prescriber.specialty_description
+-- select prescriber.specialty_description, SUM(prescription.total_claim_count)
+-- from prescriber
+-- inner join prescription
+-- using(npi)
+-- inner join drug
+-- using(drug_name)
+-- where opioid_drug_flag = 'Y'
+-- 	or long_acting_opioid_drug_flag = 'Y'
+-- group by specialty_description
+-- order by sum desc
 
--- answer_'Family Practice, 467246' how to sort sum table
+-- answer_'Nurse Pracitioner, 900845'
 
 
 --     c. **Challenge Question:** Are there any specialties that appear in the prescriber table that have no associated prescriptions in the prescription table?
@@ -92,13 +92,23 @@ order by prescriber.specialty_description
 -- 4. 
 --     a. For each drug in the drug table, return the drug name and then a column named 'drug_type' which says 'opioid' for drugs which have opioid_drug_flag = 'Y', says 'antibiotic' for those drugs which have antibiotic_drug_flag = 'Y', and says 'neither' for all other drugs. **Hint:** You may want to use a CASE expression for this. See https://www.postgresqltutorial.com/postgresql-tutorial/postgresql-case/ 
 
--- select drug.drug_name as drug_type,
--- 	case drug_type
--- 		when opioid_drug_flag = 'Y' then 'opioid'
--- 		when antibiotic_drug_flag = 'Y' then 'antibiotic'
+-- select drug.drug_name, 
+-- 	drug.drug_name as drug_type,
+-- 	case drug.drug_name
+-- 		when 'opioid_drug_flag = 'Y'' then 'opioid'
+-- 		when 'antibiotic_drug_flag = 'Y'' then 'antibiotic'
 -- 		else
 -- 			'neither'
 -- 		end drug_type_description
+-- from drug
+
+-- select drug_name, 
+-- 	case drug_name
+-- 		when opioid_drug_flag = 'Y' then 'opioid'
+-- 		when antibiotic_drug_flag = 'Y' then 'antibiotic'
+-- 		else 'neither'
+-- 	end drug_type_descrition
+-- from drug
 
 
 
@@ -195,6 +205,25 @@ order by prescriber.specialty_description
 
 --     a. First, create a list of all npi/drug_name combinations for pain management specialists (specialty_description = 'Pain Management) in the city of Nashville (nppes_provider_city = 'NASHVILLE'), where the drug is an opioid (opiod_drug_flag = 'Y'). **Warning:** Double-check your query before running it. You will only need to use the prescriber and drug tables since you don't need the claims numbers yet.
 
+
+-- select drug_name, specialty_description, nppes_provider_city, opioid_drug_flag
+-- from prescriber
+-- cross join drug
+-- 	where prescriber.specialty_description = 'Pain Management'
+-- 	and nppes_provider_city = 'NASHVILLE'
+-- 	and opioid_drug_flag = 'Y'
+
+
+
 --     b. Next, report the number of claims per drug per prescriber. Be sure to include all combinations, whether or not the prescriber had any claims. You should report the npi, the drug name, and the number of claims (total_claim_count).
-    
+
+select drug_name, specialty_description, nppes_provider_city, opioid_drug_flag, npi, drug_name
+from prescriber
+cross join drug
+	where prescriber.specialty_description = 'Pain Management'
+	and nppes_provider_city = 'NASHVILLE'
+	and opioid_drug_flag = 'Y'
+
+
+
 --     c. Finally, if you have not done so already, fill in any missing values for total_claim_count with 0. Hint - Google the COALESCE function.
